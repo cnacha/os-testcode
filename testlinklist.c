@@ -49,7 +49,7 @@ int main(){
 		append(head, i);
 	}
 
-	prepend(&head , 98);
+	//prepend(&head , 98);
 
    	print_list(head);
 }
