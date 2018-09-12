@@ -35,52 +35,10 @@ extern "C" {
         char name[64];          // to identify it when debugging
         void (*work)(void *);   // the function to perform
         void *params;           // parameters to pass to the function
-        task_dispatch_type_t type; // asynchronous or synchronous
-        sem_t task_semaphore;   // to signal when done, only used if dispatched synchronously
-        struct task *next;      // to link to the next task
-        struct task *prev;      // to link to the previous task
+
     } task_t;
     
-    typedef struct dispatch_queue_t dispatch_queue_t; // the dispatch queue type
-    typedef struct dispatch_queue_thread_t dispatch_queue_thread_t; // the dispatch queue thread type
-
-    struct dispatch_queue_thread_t {
-        dispatch_queue_t *queue;// the queue this thread is associated with
-        pthread_t thread;       // the thread which runs the task
-        sem_t thread_semaphore; // the semaphore the thread waits on until a task is allocated
-        task_t *task;           // the current task for this tread
-    };
-
-    struct dispatch_queue_t {
-        queue_type_t queue_type;        // the type of queue - serial or concurrent
-        task_t dummy_head;              // to keep the linked queue code simple
-        pthread_t queue_dispatcher;     // thread to control the queue
-        pthread_mutex_t queue_lock;     // lock when manipulating the task queue
-        sem_t queue_task_semaphore;     // keeps track of available tasks
-        sem_t queue_thread_semaphore;   // keeps track of available threads
-        sem_t queue_wait_semaphore;     // used if waiting for the queue to finish tasks
-        dispatch_queue_thread_t *threads; // one thread per core
-        queue_state_t state;            // whether the queue is running normally or being waited on
-    };
-    
-    task_t *task_create(void (*)(void *), void *, char*);
-    
-    void task_destroy(task_t *);
-
-    dispatch_queue_t *dispatch_queue_create(queue_type_t);
-    
-    void dispatch_queue_destroy(dispatch_queue_t *);
-    
-    int dispatch_async(dispatch_queue_t *, task_t *);
-    
-    int dispatch_sync(dispatch_queue_t *, task_t *);
-    
-    void dispatch_for(dispatch_queue_t *, long, void (*)(long));
-
-    pthread_t dispatch_queue_thread_init(dispatch_queue_thread_t *);
-    
-    int dispatch_queue_wait(dispatch_queue_t *);
-
+  
 
 #ifdef	__cplusplus
 }
